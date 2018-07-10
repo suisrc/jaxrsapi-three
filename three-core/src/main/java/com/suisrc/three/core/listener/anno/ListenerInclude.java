@@ -1,4 +1,4 @@
-package com.suisrc.weixin.core.listener;
+package com.suisrc.three.core.listener.anno;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

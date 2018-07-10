@@ -1,4 +1,4 @@
-package com.suisrc.weixin.core;
+package com.suisrc.three.core.msg;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -6,16 +6,17 @@ import java.util.function.Function;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.suisrc.core.utils.Throwables;
 
 /**
- * 微信消息节点数据
+ * 消息节点数据
  * 
  * 使用DOM方式解析的内容
  * 
  * @author Y13
  *
  */
-public final class WxMsgNode {
+public final class MsgNode {
 
     /**
      * 创建一个
@@ -25,12 +26,16 @@ public final class WxMsgNode {
      * @throws IOException 
      * @throws JsonProcessingException 
      */
-    static WxMsgNode create(ObjectMapper mapper, String content) throws JsonProcessingException, IOException {
-        WxMsgNode rrn = new WxMsgNode();
-        rrn.root = mapper.readTree(content);
-        rrn.content = content;
-        rrn.mapper = mapper;
-        return rrn;
+    public static MsgNode create(ObjectMapper mapper, String content) {
+        try {
+            MsgNode rrn = new MsgNode();
+            rrn.root = mapper.readTree(content);
+            rrn.content = content;
+            rrn.mapper = mapper;
+            return rrn;
+        } catch (Exception e) {
+            throw Throwables.getRuntimeException(e);
+        }
     }
     
     /**
@@ -51,7 +56,7 @@ public final class WxMsgNode {
     /**
      * 只能通过create方法创建该对象
      */
-    private WxMsgNode() {}
+    private MsgNode() {}
     
     /**
      * 获取节点树
@@ -99,14 +104,24 @@ public final class WxMsgNode {
 
     /**
      * 转换为Bean结构的对象
+     * @param type
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public <T> T toBean(Class<T> type) throws JsonProcessingException {
+        return mapper.treeToValue(root, type);
+    }
+
+    /**
+     * 转换为Bean结构的对象
      * @param type 转换类型
      * @param back 回调，用于处理异常
      * @return
      */
-    public <T> T toBean(Class<T> type, Function<T, T> back) {
+    public <T> T toBeanHideException(Class<T> type, Function<T, T> back) {
         T bean = null;
         try {
-            bean = mapper.treeToValue(root, type);
+            bean = toBean(type);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -118,23 +133,13 @@ public final class WxMsgNode {
      * @param type
      * @return
      */
-    public <T> T toBean(Class<T> type) {
+    public <T> T toBeanHideException(Class<T> type) {
         try {
-            return mapper.treeToValue(root, type);
+            return toBean(type);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    /**
-     * 转换为Bean结构的对象
-     * @param type
-     * @return
-     * @throws JsonProcessingException 
-     */
-    public <T> T toBean2(Class<T> type) throws JsonProcessingException {
-        return mapper.treeToValue(root, type);
     }
 
 }

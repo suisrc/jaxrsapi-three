@@ -1,9 +1,10 @@
-package com.suisrc.weixin.core.listener;
+package com.suisrc.three.core.listener.inf;
 
-import com.suisrc.jaxrsapi.core.util.JaxrsapiUtils;
+import com.suisrc.core.utils.ReflectionUtils;
 
 /**
  * 监听器的创建器
+ * 
  * @author Y13
  *
  */
@@ -21,5 +22,5 @@ public interface ListenerInstance {
     /**
      * 默认的构建器
      */
-    ListenerInstance DEFAULT = clazz -> JaxrsapiUtils.newInstance(clazz);
+    ListenerInstance DEFAULT = clazz -> ReflectionUtils.newInstance(clazz);
 }
