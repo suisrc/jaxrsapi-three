@@ -5,9 +5,7 @@ import com.suisrc.core.reference.RefVal;
 /***
  * 监听接口
  * 
- * 监听器使用的时候，需要通过@Named注解标记监听的对象的类型， 必须是类型的全名（包+类型） 
- * 
- * 使用String类型标记而不使用Class,是为了解除项目之间的强引用
+ * 监听器使用的时候，需要通过@ListenerRestApi注解标记监听的对象的类型， 必须是类型的全名（包+类型） 
  * 
  * @author Y13
  *
@@ -22,7 +20,7 @@ public interface Listener<T> {
      * @param bean 应答的参数
      * @return 是否继续下一个应答
      */
-    boolean accept(RefVal<?> result, T bean);
+    boolean accept(RefVal<Object> result, T bean);
 
     /**
      * 接受监听对象
@@ -32,7 +30,7 @@ public interface Listener<T> {
      * @param owner 应答内容的请求者
      * @return 是否继续一下应答
      */
-    default boolean accept(RefVal<?> result, T bean, Object owner) {
+    default boolean accept(RefVal<Object> result, T bean, Object owner) {
         return accept(result, bean);
     }
 

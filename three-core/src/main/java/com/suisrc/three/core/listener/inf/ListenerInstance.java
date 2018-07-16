@@ -1,6 +1,6 @@
 package com.suisrc.three.core.listener.inf;
 
-import com.suisrc.core.utils.ReflectionUtils;
+import com.suisrc.core.ScCDI;
 
 /**
  * 监听器的创建器
@@ -22,5 +22,5 @@ public interface ListenerInstance {
     /**
      * 默认的构建器
      */
-    ListenerInstance DEFAULT = clazz -> ReflectionUtils.newInstance(clazz);
+    ListenerInstance DEFAULT = clazz -> ScCDI.getInjectBean(clazz); // ReflectionUtils::newInstance
 }
