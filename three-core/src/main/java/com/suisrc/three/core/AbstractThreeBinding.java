@@ -109,10 +109,15 @@ public abstract class AbstractThreeBinding<T> {
 
     /**
      * 微信回调请求绑定
-     * 
      * 内部处理方法
+     * @param content 消息的内容
+     * @param isJson 消息的类型，这里只有两种，json or xml 如果不是json就必须是xml没有其他选择
+     * @param appIdOrCropId 消息来自的企业ID或者公众号ID
+     * @param resultAdapter
+     * @param responseAdapter
+     * @return
      */
-    protected Response doInternalWork(String content, boolean isJson, 
+    protected Response doInternalWork(String content, boolean isJson, String appIdOrCropId,
             Function<String, String> resultAdapter, Function<String, Response> responseAdapter) {
         // --------------------------------消息内容处理------------------------------------//
         // 解析消息内容
@@ -122,6 +127,8 @@ public abstract class AbstractThreeBinding<T> {
             // return Response.ok().entity(error).type(MediaType.TEXT_PLAIN).build();
             throw throwException(new RuntimeException(error));
         }
+        // 赋值消息的信息
+        message.setTargetAppIdOrCropId(appIdOrCropId);
         // 通过监听器处理消息内容
         Object bean = getMessageController().accept(message); // 得到处理的结构
         if (bean == null) {
@@ -140,7 +147,10 @@ public abstract class AbstractThreeBinding<T> {
         }
         // --------------------------------返回处理的结果------------------------------------//
         if (responseAdapter != null) {
-            return responseAdapter.apply(result);
+            Response response = responseAdapter.apply(result);
+            if (response != null) {
+                return response;
+            }
         }
         return Response.ok().entity(result).type(isJson ? MediaType.APPLICATION_JSON : MediaType.APPLICATION_XML).build();
     }

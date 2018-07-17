@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author Y13
  *
  */
-@JsonIgnoreProperties({"json", "targetRawData"})
+@JsonIgnoreProperties({"json", "targetRawData", "targetAppIdOrCropId"})
 @JsonInclude(Include.NON_NULL)
 public interface IMessage {
     
@@ -44,6 +44,22 @@ public interface IMessage {
      * 设定原始内容
      */
     default void setTargetRawData(String rawData) {
+        // no operation
+    }
+    
+    /**
+     * 获取公众号或者企业ID
+     * @return
+     */
+    default String getTargetAppIdOrCropId() {
+        return null;
+    }
+
+    /**
+     * 设定公众号或者企业ID
+     * @param appIdOrCropId
+     */
+    default void setTargetAppIdOrCropId(String appIdOrCropId) {
         // no operation
     }
 }
