@@ -19,7 +19,7 @@ public class UnknowMessage implements IMessage {
     /**
      * 消息来自企业号或者公众号ID
      */
-    private String targetAppIdOrCropId = null;
+    private String targetAppId = null;
     
     /**
      * 原始数据内容
@@ -74,6 +74,7 @@ public class UnknowMessage implements IMessage {
      * 获取共通解析的消息内容 该内容只有在消息内容无法解析的时候有效
      * @return the rawNode2
      */
+    @Override
     public MsgNode getTargetRawNode() {
         return targetRawNode;
     }
@@ -83,9 +84,10 @@ public class UnknowMessage implements IMessage {
      * 系统自动生成调用，最好不要调用该方法，以防止影响到原始数据
      * @param rawNode2 the rawNode2 to set
      */
+    @Override
     @Deprecated
-    public void setTargetRawNode(MsgNode targetRawNode) {
-        this.targetRawNode = targetRawNode;
+    public void setTargetRawNode(MsgNode rawNode) {
+        this.targetRawNode = rawNode;
     }
 
     /**
@@ -93,19 +95,19 @@ public class UnknowMessage implements IMessage {
      * @return the targetAppIdOrCropId
      */
     @Override
-    public String getTargetAppIdOrCropId() {
-        return targetAppIdOrCropId;
+    public String getTargetAppId() {
+        return targetAppId;
     }
 
     /**
      * 消息来自企业号或者公众号ID
      * 系统自动生成调用，最好不要调用该方法，以防止影响到原始数据
-     * @param targetAppIdOrCropId the targetAppIdOrCropId to set
+     * @param targetAppId the targetAppId to set
      */
     @Override
     @Deprecated
-    public void setTargetAppIdOrCropId(String targetAppIdOrCropId) {
-        this.targetAppIdOrCropId = targetAppIdOrCropId;
+    public void setTargetAppId(String appId) {
+        this.targetAppId = appId;
     }
 
     

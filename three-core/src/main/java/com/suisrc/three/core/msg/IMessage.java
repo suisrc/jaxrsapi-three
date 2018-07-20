@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  * @author Y13
  *
  */
-@JsonIgnoreProperties({"json", "targetRawData", "targetAppIdOrCropId"})
+@JsonIgnoreProperties({"json", "targetRawData", "targetRawNode", "targetAppId"})
 @JsonInclude(Include.NON_NULL)
 public interface IMessage {
     
@@ -27,39 +27,54 @@ public interface IMessage {
     }
     
     /**
-     * 设定格式化为json
-     */
-    default void setJson(boolean isJson) {
-        // no operation
-    }
-    
-    /**
      * 获取原始数据
+     * 
+     * 如果没有必要可以忽略
      */
     default String getTargetRawData() {
         return null;
     }
     
     /**
-     * 设定原始内容
+     * 获取原始数据解析的节点形式
+     * 
+     * 如果没有必要可以忽略
      */
-    default void setTargetRawData(String rawData) {
-        // no operation
+    default MsgNode getTargetRawNode() {
+        return null;
     }
     
     /**
-     * 获取公众号或者企业ID
-     * @return
+     * 获取应用主键
+     * 
+     * 如果没有必要可以忽略
      */
-    default String getTargetAppIdOrCropId() {
+    default String getTargetAppId() {
         return null;
     }
 
     /**
-     * 设定公众号或者企业ID
-     * @param appIdOrCropId
+     * 设定消息类型（xml or json）
+     * @param isJson
      */
-    default void setTargetAppIdOrCropId(String appIdOrCropId) {
-        // no operation
-    }
+    default void setJson(boolean isJson) {}
+
+    /**
+     * 设定消息原始数据
+     * @param rawData
+     */
+    default void setTargetRawData(String rawData) {}
+
+    /**
+     * 设定消息原始数据
+     * @param rawNode
+     */
+    default void setTargetRawNode(MsgNode rawNode) {}
+
+    /**
+     * 设定引用主键
+     * @param appId
+     */
+    default void setTargetAppId(String appId) {}
+
 }

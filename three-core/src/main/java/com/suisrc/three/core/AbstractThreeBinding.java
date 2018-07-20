@@ -8,6 +8,8 @@ import javax.ws.rs.core.Response;
 
 import com.suisrc.core.fasterxml.FasterFactory;
 import com.suisrc.core.utils.Throwables;
+import com.suisrc.three.core.exception.UnHandleException;
+import com.suisrc.three.core.exception.WarnHandleException;
 import com.suisrc.three.core.msg.IMessage;
 import com.suisrc.three.core.msg.MsgNode;
 import com.suisrc.three.core.msg.UnknowMessage;
@@ -18,7 +20,7 @@ import com.suisrc.three.core.msg.UnknowMessage;
  * @author Y13
  *
  */
-public abstract class AbstractThreeBinding<T> {
+public abstract class AbstractThreeBinding<T> implements ThreeBinding {
     
     /**
      * 监听器
@@ -50,7 +52,6 @@ public abstract class AbstractThreeBinding<T> {
      * @param log
      */
     protected RuntimeException throwException(Exception e) {
-        System.out.println(e.getMessage());
         return Throwables.getRuntimeException(e);
     }
     
@@ -67,7 +68,6 @@ public abstract class AbstractThreeBinding<T> {
      * @param xml
      * @return
      */
-    @SuppressWarnings("deprecation")
     protected IMessage str2Bean(String content, boolean isJson) {
         MsgNode node = getFasterFactory().str2Node(content, isJson, MsgNode::create);
         Class<? extends IMessage> msgType = getMsgClass(node);
@@ -88,8 +88,9 @@ public abstract class AbstractThreeBinding<T> {
         if (bean == null) {
             // 数据无法解析
             bean = new UnknowMessage();
-            ((UnknowMessage)bean).setTargetRawNode(node);
         }
+        // 给出原始数据的Node节点模型（可用于验证）
+        bean.setTargetRawNode(node);
         // 给出数据的原始类型
         bean.setJson(isJson);
         // 给出原始数据内容--防止后面用于验证时候使用一些漏掉的信息
@@ -112,29 +113,31 @@ public abstract class AbstractThreeBinding<T> {
      * 内部处理方法
      * @param content 消息的内容
      * @param isJson 消息的类型，这里只有两种，json or xml 如果不是json就必须是xml没有其他选择
-     * @param appIdOrCropId 消息来自的企业ID或者公众号ID
+     * @param appId 消息来自的应用的主键
      * @param resultAdapter
      * @param responseAdapter
      * @return
      */
-    protected Response doInternalWork(String content, boolean isJson, String appIdOrCropId,
+    protected Response doInternalWork(String content, boolean isJson, String appId,
             Function<String, String> resultAdapter, Function<String, Response> responseAdapter) {
         // --------------------------------消息内容处理------------------------------------//
         // 解析消息内容
         IMessage message = str2Bean(content, isJson); // 转换为bean
         if (message == null) {
+            // 无法解析消息是严重bug， 需要作出不能处理警告
             String error = String.format("Message content can not be resolved [%s]:%s", getClass(), content);
             // return Response.ok().entity(error).type(MediaType.TEXT_PLAIN).build();
-            throw throwException(new RuntimeException(error));
+            throw throwException(new UnHandleException(error));
         }
         // 赋值消息的信息
-        message.setTargetAppIdOrCropId(appIdOrCropId);
+        message.setTargetAppId(appId);
         // 通过监听器处理消息内容
         Object bean = getMessageController().accept(message); // 得到处理的结构
         if (bean == null) {
+            // 无法处理消息，仅仅是没有监听，作为不能应道警告
             String error = String.format("Message content can not be answered [%s]:%s", getClass(), content);
             // return Response.ok().entity(error).type(MediaType.TEXT_PLAIN).build();
-            throw throwException(new RuntimeException(error));
+            throw throwException(new WarnHandleException(error));
         }
         if (bean instanceof IMessage) {
             isJson = ((IMessage)bean).isJson(); // 用新的格式要求替换
