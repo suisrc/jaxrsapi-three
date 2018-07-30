@@ -2,6 +2,7 @@ package com.suisrc.three.core;
 
 import java.time.LocalDateTime;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,6 +22,7 @@ import com.suisrc.three.core.msg.UnknowMessage;
  *
  */
 public abstract class AbstractThreeBinding<T> implements ThreeBinding {
+    protected static final Logger logger = Logger.getLogger(ThreeBinding.class.getName());
     
     /**
      * 监听器
@@ -78,14 +80,14 @@ public abstract class AbstractThreeBinding<T> implements ThreeBinding {
                 bean = node.toBean(msgType);
             } catch (Throwable e) {
                 // 使用 node.toBean在某种情况下，比如@JacksonXmlElementWrapper是无法解析的
-                System.out.println(String.format(
-                        "Message content can not be resolved [%s]:%s", 
-                        msgType.getCanonicalName(), e.getMessage()));
+                String module = "Message content can not be resolved [%s]:%s";
+                logger.warning(String.format(module, msgType.getCanonicalName(), e.getMessage()));
                 // 尝试使用基础解析工具解析
                 bean = getFasterFactory().str2Bean(content, msgType, isJson);
             }
         }
         if (bean == null) {
+            logger.info(String.format("Message content can not be resolved, used UnknowMessage :%s", content));
             // 数据无法解析
             bean = new UnknowMessage();
         }

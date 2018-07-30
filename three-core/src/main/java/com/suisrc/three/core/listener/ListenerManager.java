@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.suisrc.core.Global;
 import com.suisrc.core.reference.RefVal;
 import com.suisrc.core.utils.ReflectionUtils;
 import com.suisrc.three.core.MessageController;
@@ -139,8 +140,9 @@ public class ListenerManager<C> implements MessageController, Serializable {
                     types.add(type);
                 } else {
                     // 指定的类型不可用
-                    System.err.println(String.format("listener type '%s' is not assignable form '%s' in [%s], ignore.", 
-                            genericType.getCanonicalName(), type.getCanonicalName(), clazz.getCanonicalName()));
+                    String error = String.format("listener type '%s' is not assignable form '%s' in [%s], ignore.", 
+                            genericType.getCanonicalName(), type.getCanonicalName(), clazz.getCanonicalName());
+                    Global.getLogger().warning(error);
                 }
             }
         }
@@ -260,11 +262,12 @@ public class ListenerManager<C> implements MessageController, Serializable {
                 if (Listener.class.isAssignableFrom(clazz)) {
                     addListener(clazz);
                 } else {
-                    System.err.println(String.format("Type exception: [%s] can't convert to [%s]", 
-                            cls, Listener.class.getName()));
+                    String error = String.format("Type exception: [%s] can't convert to [%s]", cls, Listener.class.getName());
+                    Global.getLogger().warning(error);
                 }
             } catch (ClassNotFoundException e) {
-                System.err.println(String.format("Unable to load [%s], exception: [%s]", cls, e.getMessage()));
+                String error = String.format("Unable to load [%s], exception: [%s]", cls, e.getMessage());
+                Global.getLogger().warning(error);
             }
         }
     }
