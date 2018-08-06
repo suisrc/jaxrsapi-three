@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * 监听的rest接口
+ * 
  * @author Y13
  */
 @Target({TYPE})
@@ -17,6 +18,6 @@ public @interface ListenerRestApi {
     /**
      * 监听的接口的类型
      */
-    Class<?> value();
+    String value();
 
 }

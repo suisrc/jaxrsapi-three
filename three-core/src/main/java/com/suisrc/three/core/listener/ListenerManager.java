@@ -29,29 +29,29 @@ import com.suisrc.three.core.msg.IMessage;
  *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class ListenerManager<C> implements MessageController, Serializable {
+public class ListenerManager implements MessageController, Serializable {
     private static final long serialVersionUID = 2802236925094985275L;
 
     /**
      * 监听内容的索引
      */
-    private HashMap<Class, Listener[]> indexs = new HashMap<>();
+    protected HashMap<Class, Listener[]> indexs = new HashMap<>();
     
     /**
      * 监控管理器的所有者
      * 如果所有者为null，为公共监听器，监听所有的内容
      */
-    private C owner;
+    protected Object owner;
     
     /**
      * 所属类型，解决实体和接口标记的问题
      */
-    private Class<C> ownerType;
+    protected String ownerKey;
     
     /**
      * 监听创建者
      */
-    private ListenerInstance instance = ListenerInstance.DEFAULT;
+    protected ListenerInstance instance = ListenerInstance.DEFAULT;
     
     /**
      * 构造
@@ -59,23 +59,9 @@ public class ListenerManager<C> implements MessageController, Serializable {
      * @param owner
      * @param ownerType 
      */
-    public ListenerManager(C owner, Class<C> ownerType) {
+    public ListenerManager(Object owner, String ownerKey) {
         this.owner = owner;
-        this.ownerType = ownerType;
-    }
-    
-    /**
-     * 获取所属者
-     */
-    public C getOwner() {
-        return owner;
-    }
-    
-    /**
-     * 获取所属者的类型
-     */
-    public Class<C> getOwnerType() {
-        return ownerType;
+        this.ownerKey = ownerKey;
     }
     
     /**
@@ -119,7 +105,7 @@ public class ListenerManager<C> implements MessageController, Serializable {
         ListenerRestApi restApi = clazz.getAnnotation(ListenerRestApi.class);
         if (restApi == null) {
             // 泛型监听
-        } else if (getOwnerType() != null && restApi.value() == getOwnerType()) {
+        } else if (ownerKey != null && ownerKey.equals(restApi.value())) {
             // 特定接口类型监听
         } else {
             return null; // 鉴别条件验证没有通过

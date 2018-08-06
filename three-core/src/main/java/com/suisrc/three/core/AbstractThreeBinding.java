@@ -21,7 +21,7 @@ import com.suisrc.three.core.msg.UnknowMessage;
  * @author Y13
  *
  */
-public abstract class AbstractThreeBinding<T> implements ThreeBinding {
+public abstract class AbstractThreeBinding implements ThreeBinding {
     protected static final Logger logger = Logger.getLogger(ThreeBinding.class.getName());
     
     /**
