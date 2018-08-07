@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.suisrc.core.fasterxml.FF;
 import com.suisrc.core.fasterxml.FasterFactory;
+import com.suisrc.core.fasterxml.FasterFactory.Type;
 import com.suisrc.core.utils.Throwables;
 import com.suisrc.three.core.exception.UnHandleException;
 import com.suisrc.three.core.exception.WarnHandleException;
@@ -62,7 +64,7 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
      * @return
      */
     protected FasterFactory getFasterFactory() {
-        return FasterFactory.getDefault();
+        return FF.getDefault();
     }
 
     /**
@@ -71,7 +73,7 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
      * @return
      */
     protected IMessage str2Bean(String content, boolean isJson) {
-        MsgNode node = getFasterFactory().str2Node(content, isJson, MsgNode::create);
+        MsgNode node = getFasterFactory().string2Node(content, isJson ? Type.JSON : Type.XML, MsgNode::create);
         Class<? extends IMessage> msgType = getMsgClass(node);
         IMessage bean = null;
         if (msgType != null) {
@@ -83,7 +85,7 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
                 String module = "Message content can not be resolved [%s]:%s";
                 logger.warning(String.format(module, msgType.getCanonicalName(), e.getMessage()));
                 // 尝试使用基础解析工具解析
-                bean = getFasterFactory().str2Bean(content, msgType, isJson);
+                bean = getFasterFactory().string2Bean(content, msgType, isJson ? Type.JSON : Type.XML);
             }
         }
         if (bean == null) {
@@ -107,7 +109,7 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
      * @return
      */
     protected String bean2Str(Object bean, boolean isJson) {
-        return getFasterFactory().bean2Str(bean, isJson);
+        return getFasterFactory().bean2String(bean, isJson ? Type.JSON : Type.XML);
     }
 
     /**
