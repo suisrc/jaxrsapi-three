@@ -129,7 +129,8 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
         IMessage message = str2Bean(content, isJson); // 转换为bean
         if (message == null) {
             // 无法解析消息是严重bug， 需要作出不能处理警告
-            String error = String.format("Message content can not be resolved [%s]:%s", getClass(), content);
+            String error = String.format("Message content can not be resolved [%s<-null]:%s", 
+                    getClass().getCanonicalName(), content);
             // return Response.ok().entity(error).type(MediaType.TEXT_PLAIN).build();
             throw throwException(new UnHandleException(error));
         }
@@ -139,7 +140,8 @@ public abstract class AbstractThreeBinding implements ThreeBinding {
         Object bean = getMessageController().accept(message); // 得到处理的结构
         if (bean == null) {
             // 无法处理消息，仅仅是没有监听，作为不能应道警告
-            String error = String.format("Message content can not be answered [%s]:%s", getClass(), content);
+            String error = String.format("Message content can not be answered [%s<-%s]:%s", 
+                    getClass().getCanonicalName(), message.getClass().getCanonicalName(), content);
             // return Response.ok().entity(error).type(MediaType.TEXT_PLAIN).build();
             throw throwException(new WarnHandleException(error));
         }
